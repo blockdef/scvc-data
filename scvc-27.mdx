@@ -1,0 +1,48 @@
+---
+title:   SCVC-27
+date: 2024-05-28
+author: BLOCKDEF
+headings:
+  - Introduction
+  - The-EVM-Security-Testing-Guide
+  - Purpose
+  - Design
+  - Analyze
+  - Fuzzing
+  - Deploy
+---
+
+## Description
+
+A reentrancy attack is a type of vulnerability in smart contracts where a malicious contract can repeatedly call back into the vulnerable contract before the original function call completes, potentially leading to unexpected behavior or loss of funds.
+
+## Summary
+
+Reentrancy attacks exploit the order of operations in smart contracts to manipulate state changes and drain funds from vulnerable contracts. This vulnerability arises when a contract interacts with untrusted external contracts before completing its internal state changes.
+
+## Real-World Examples
+
+The most infamous example of a reentrancy attack is the DAO hack in 2016, where an attacker exploited a reentrancy vulnerability to drain Ether from the DAO contract.
+
+## Code Example
+
+```javascript
+contract Vulnerable {
+    mapping(address => uint256) public balances;
+
+    function withdraw(uint256 _amount) public {
+        require(balances[msg.sender] >= _amount);
+        balances[msg.sender] -= _amount;
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success);
+    }
+}
+
+## Prevention Measures
+
+Preventing reentrancy attacks involves using the "Checks-Effects-Interactions" pattern, where external calls are made after modifying the contract's state. Additionally, developers should use the "withdraw pattern" for transferring funds and avoid using the transfer() or send() functions.
+
+## References
+
+- [Reentrancy Wiki](https://consensys.github.io/smart-contract-best-practices/known_attacks/#reentrancy): ConsenSys smart contract best practices guide covering reentrancy attacks.
+- [The DAO Hack](https://hackingdistributed.com/2016/06/18/analysis-of-the-dao-exploit/): Analysis of the DAO hack and the reentrancy vulnerability exploited by the attacker.
